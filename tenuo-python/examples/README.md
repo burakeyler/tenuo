@@ -123,6 +123,7 @@ This demo shows Tenuo's key capabilities:
 
 ### LangChain / LangGraph Integration
 - **[langchain/](langchain/)**: Complete LangChain and LangGraph integration examples
+  - **[create_agent_middleware.py](langchain/create_agent_middleware.py)**: LangChain 1.x `create_agent()` + `TenuoMiddleware` quickstart (warrant in state, key registry, `trusted_roots`; no API key needed)
   - **[simple.py](langchain/simple.py)**: Minimal example of protecting LangChain tools. **Start here for LangChain integration.**
   - **[integration.py](langchain/integration.py)**: Advanced integration with callbacks and context propagation
   - **[protect_tools.py](langchain/protect_tools.py)**: Securing third-party tools from `langchain_community`
