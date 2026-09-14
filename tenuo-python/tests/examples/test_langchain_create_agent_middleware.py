@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pytest
 
+from tenuo.keys import KeyRegistry
+
 pytest.importorskip("langchain.agents.middleware", reason="create_agent middleware requires langchain>=1.0")
 
 EXAMPLE = Path(__file__).resolve().parents[2] / "examples" / "langchain" / "create_agent_middleware.py"
@@ -17,11 +19,13 @@ EXAMPLE = Path(__file__).resolve().parents[2] / "examples" / "langchain" / "crea
 
 @pytest.fixture
 def example():
+    KeyRegistry.reset_instance()
     spec = importlib.util.spec_from_file_location("create_agent_middleware_example", EXAMPLE)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     module.executed.clear()
-    return module
+    yield module
+    KeyRegistry.reset_instance()
 
 
 @pytest.fixture

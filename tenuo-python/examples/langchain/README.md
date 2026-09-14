@@ -46,7 +46,7 @@ Minimal example of protecting LangChain tools. Shows:
 - Running agents with authorization
 - Basic error handling
 
-**Start here** for LangChain integration.
+**Use when**: you are on the older `@guard` / callback-based APIs.
 
 ### [integration.py](integration.py) - Advanced Callbacks
 

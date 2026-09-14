@@ -13,7 +13,7 @@ Demonstrates:
 
 Requires LangChain >= 1.0 (for create_agent and agent middleware):
 
-    uv pip install "tenuo[langchain]" "langchain>=1.0"
+    uv pip install "tenuo[langchain,langgraph]" "langchain>=1.0"
     python create_agent_middleware.py
 
 A deterministic fake chat model scripts the tool calls, so no provider
