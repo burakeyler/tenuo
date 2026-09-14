@@ -38,6 +38,26 @@ try {
     /^dist\/generated\/(package\.json|tenuo_wasm\.js|tenuo_wasm\.d\.ts)$/,
     /^dist\/generated\/(tenuo_wasm_bg\.wasm|tenuo_wasm_bg\.wasm\.d\.ts)$/,
   ]);
+  // The major selector is equivalent to ^20.0.0 without cmd.exe's caret escape.
+  run("npm", ["install", "--save-dev", "typescript@~5.8.2", "@types/node@20"], {
+    cwd: installDir,
+    stdio: "inherit",
+  });
+  writeFileSync(join(installDir, "consumer.ts"), `
+    import { createTenuo, under, type ProtectedTool, type Session } from "@tenuo/core";
+    const tenuo = createTenuo({ root: createTenuo.devRoot() });
+    const inner = { execute: async ({ path }: { path: string }) => path };
+    const tool = tenuo.tool(inner, {
+      capability: "read_file",
+      allow: { path: under("/data") },
+    });
+    const typedTool: ProtectedTool<typeof inner> = tool;
+    const result: string = await tool.execute({ path: "/data/q3.pdf" });
+    const session: Session = tenuo.session({ tools: [tool] });
+    await tenuo.withSession(session, () => tool.execute({ path: "/data/q3.pdf" }));
+  `);
+  typecheckConsumer(installDir);
+
   copyFileSync(join(coreDir, "scripts", "pack-smoke-consumer.mjs"), join(installDir, "smoke.mjs"));
   execFileSync(process.execPath, [join(installDir, "smoke.mjs")], {
     cwd: installDir,
@@ -115,4 +135,25 @@ function assertPackageContents(root, packageName, allowed) {
       throw new Error(`${map} has an empty sourcesContent entry`);
     }
   }
+}
+
+function typecheckConsumer(cwd) {
+  writeFileSync(
+    join(cwd, "tsconfig.json"),
+    JSON.stringify({
+      compilerOptions: {
+        target: "ES2022",
+        module: "NodeNext",
+        moduleResolution: "NodeNext",
+        strict: true,
+        noEmit: true,
+        skipLibCheck: false,
+      },
+      files: ["consumer.ts"],
+    }),
+  );
+  run(process.execPath, [join(cwd, "node_modules", "typescript", "bin", "tsc"), "--noEmit"], {
+    cwd,
+    stdio: "inherit",
+  });
 }
